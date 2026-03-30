@@ -3,6 +3,7 @@ import { useTranslation } from "./useTranslation";
 import type { Locale } from "./i18n";
 import logoImg from "./assets/logo.jpg";
 import bgImg from "./assets/img_01.png";
+import { QRCodeSVG } from "qrcode.react";
 
 const YouTubeIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -62,6 +63,43 @@ function PillButton({ href, icon, label }: { href: string; icon: React.ReactElem
   );
 }
 
+function QRModal({ onClose }: { onClose: () => void }) {
+  const siteUrl = "https://rodrigoravpro.github.io/viagens_memorias/";
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 200,
+        background: "rgba(0,0,0,0.75)",
+        backdropFilter: "blur(8px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#fff",
+          borderRadius: 20,
+          padding: "28px 28px 20px",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+          boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+        }}
+      >
+        <QRCodeSVG value={siteUrl} size={220} level="H" includeMargin={false} />
+        <button
+          onClick={onClose}
+          style={{
+            padding: "8px 28px", borderRadius: 999,
+            background: "#111", color: "#fff",
+            border: "none", fontSize: "0.82rem", fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >Fechar</button>
+      </div>
+    </div>
+  );
+}
+
 function ShareButton({ label, copiedLabel }: { label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -114,6 +152,41 @@ function ShareButton({ label, copiedLabel }: { label: string; copiedLabel: strin
       )}
       <span>{copied ? copiedLabel : label}</span>
     </button>
+  );
+}
+
+function QRButton({ label }: { label: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          padding: "10px 24px",
+          borderRadius: 999,
+          border: "1.5px solid rgba(255,255,255,0.3)",
+          background: "rgba(255,255,255,0.08)",
+          backdropFilter: "blur(12px)",
+          color: "rgba(255,255,255,0.7)",
+          fontSize: "0.82rem",
+          fontWeight: 600,
+          letterSpacing: "0.04em",
+          cursor: "pointer",
+          marginTop: 8,
+        }}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="3" height="3" /><rect x="18" y="14" width="3" height="3" /><rect x="14" y="18" width="3" height="3" /><rect x="18" y="18" width="3" height="3" />
+        </svg>
+        <span>{label}</span>
+      </button>
+      {open && <QRModal onClose={() => setOpen(false)} />}
+    </>
   );
 }
 
@@ -261,6 +334,9 @@ export default function App() {
         </div>
 
         <ShareButton label={t("shareLabel")} copiedLabel={t("shareCopied")} />
+
+        {/* QR Code button */}
+        <QRButton label={t("qrLabel")} />
 
         {/* Footer */}
         <p style={{

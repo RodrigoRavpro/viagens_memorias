@@ -21,6 +21,7 @@ export const translations = {
     footerCopy: "© 2026 · Viagens e Memórias · Todos os direitos reservados",
     shareLabel: "Compartilhar",
     shareCopied: "Link copiado!",
+    qrLabel: "QR Code",
   },
   es: {
     badge: "Rafa & Deah · Sid & Paula",
@@ -42,6 +43,7 @@ export const translations = {
     footerCopy: "© 2026 · Viagens e Memórias · Todos los derechos reservados",
     shareLabel: "Compartir",
     shareCopied: "¡Enlace copiado!",
+    qrLabel: "QR Code",
   },
   en: {
     badge: "Rafa & Deah · Sid & Paula",
@@ -63,6 +65,7 @@ export const translations = {
     footerCopy: "© 2026 · Viagens e Memórias · All rights reserved",
     shareLabel: "Share",
     shareCopied: "Link copied!",
+    qrLabel: "QR Code",
   },
 } satisfies Record<Locale, Record<string, string>>;
 
