@@ -1,142 +1,279 @@
-import { HeroGeometric } from "./components/ui/shape-landing-hero";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "./useTranslation";
+import type { Locale } from "./i18n";
+import logoImg from "./assets/logo.jpg";
+import bgImg from "./assets/img_01.png";
 
 const YouTubeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
     <path d="m10 15 5-3-5-3z" />
   </svg>
 );
 
 const InstagramIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
     <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
     <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
   </svg>
 );
 
-const ArrowRightIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12h14" />
-    <path d="m12 5 7 7-7 7" />
-  </svg>
-);
-
-const CompassIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-  </svg>
-);
-
-const links = [
-  {
-    href: "https://youtube.com/@viagensememorias4a?si=Ul9klEuf5DxcnuVR",
-    label: "Canal do YouTube",
-    sub: "Vlogs de viagem & aventuras de moto",
-    Icon: YouTubeIcon,
-    hoverBorder: "hover:border-red-500/60",
-    hoverGlow: "hover:shadow-[0_12px_40px_rgba(255,0,0,0.12)]",
-    iconColor: "text-red-400",
-  },
-  {
-    href: "https://www.instagram.com/viagensememorias_oficial?igsh=MTVjejNodXg4d2t0dQ==",
-    label: "Instagram",
-    sub: "@viagensememorias_oficial",
-    Icon: InstagramIcon,
-    hoverBorder: "hover:border-pink-500/60",
-    hoverGlow: "hover:shadow-[0_12px_40px_rgba(225,48,108,0.12)]",
-    iconColor: "text-pink-400",
-  },
+const LOCALES: { code: Locale; flag: string; label: string }[] = [
+  { code: "pt", flag: "🇧🇷", label: "PT" },
+  { code: "es", flag: "🇦🇷", label: "ES" },
+  { code: "en", flag: "🇺🇸", label: "EN" },
 ];
 
-export default function App() {
+function PillButton({ href, icon, label }: { href: string; icon: React.ReactElement; label: string }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <main className="bg-[#030303]">
-      <HeroGeometric
-        badge="Rafa & Deah · Sid e Paula"
-        title1="Viagens e"
-        title2="Memórias"
-        description="Dois casais unidos pela paixão por estradas, motos e a liberdade de explorar o mundo juntos. Cada quilômetro rodado é uma história nova."
-      />
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+        width: "100%",
+        maxWidth: 360,
+        padding: "15px 24px",
+        borderRadius: 999,
+        border: "1.5px solid rgba(255,255,255,0.55)",
+        background: hovered ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.25)",
+        backdropFilter: "blur(12px)",
+        color: "#fff",
+        textDecoration: "none",
+        fontSize: "1rem",
+        fontWeight: 700,
+        letterSpacing: "0.02em",
+        transform: hovered ? "scale(1.02)" : "scale(1)",
+        transition: "all 0.18s ease",
+        cursor: "pointer",
+      }}
+    >
+      {icon}
+      <span>{label}</span>
+    </a>
+  );
+}
 
-      <section className="relative px-5 pb-24 flex flex-col items-center -mt-16 z-10">
-        {/* Avatar */}
-        <div className="mb-8">
-          <div
-            className="w-36 h-36 rounded-full p-[3px]"
-            style={{ background: "linear-gradient(135deg, #e8a838, #c0392b 50%, #e8a838)" }}
+function ShareButton({ label, copiedLabel }: { label: string; copiedLabel: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: "Viagens e Memórias",
+      text: "Dois casais de moto explorando o mundo!",
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        padding: "10px 24px",
+        borderRadius: 999,
+        border: "1.5px solid rgba(255,255,255,0.3)",
+        background: "rgba(255,255,255,0.08)",
+        backdropFilter: "blur(12px)",
+        color: copied ? "#86efac" : "rgba(255,255,255,0.7)",
+        fontSize: "0.82rem",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        marginTop: 24,
+      }}
+    >
+      {copied ? (
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      )}
+      <span>{copied ? copiedLabel : label}</span>
+    </button>
+  );
+}
+
+export default function App() {
+  const { t, locale, changeLocale } = useTranslation();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <main style={{
+      position: "relative",
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      overflow: "hidden",
+      fontFamily: "'Inter', sans-serif",
+      color: "#fff",
+    }}>
+      {/* Background image */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        backgroundImage: `url(${bgImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: `center ${50 + scrollY * 0.25}%`,
+        transform: `translateY(${scrollY * 0.15}px)`,
+        willChange: "transform",
+        zIndex: 0,
+      }} />
+      {/* Dark overlay */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.7) 100%)",
+        zIndex: 1,
+      }} />
+
+      {/* Language switcher */}
+      <div style={{ position: "fixed", top: 16, right: 16, zIndex: 100, display: "flex", gap: 6 }}>
+        {LOCALES.map(({ code, flag, label }) => (
+          <button
+            key={code}
+            onClick={() => changeLocale(code)}
+            style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "5px 10px", borderRadius: 99,
+              background: locale === code ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)",
+              border: `1px solid ${locale === code ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)"}`,
+              backdropFilter: "blur(8px)",
+              color: "#fff",
+              fontSize: "0.72rem", fontWeight: 600,
+              cursor: "pointer", transition: "all 0.18s ease",
+            }}
           >
-            <div className="w-full h-full rounded-full overflow-hidden bg-[#111]">
-              <img
-                src="/assets/logo.jpg"
-                alt="Viagens e Memórias"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <span>{flag}</span>
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{
+        position: "relative",
+        zIndex: 10,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+        maxWidth: 420,
+        padding: "60px 24px 48px",
+        gap: 0,
+      }}>
+        {/* Avatar */}
+        <div style={{
+          width: 180, height: 180,
+          borderRadius: "50%",
+          padding: 3,
+          background: "linear-gradient(135deg, #e8a838, #c0392b 50%, #e8a838)",
+          boxShadow: "0 0 48px rgba(232,168,56,0.6)",
+          marginBottom: 16,
+          flexShrink: 0,
+          transform: `translateY(${-scrollY * 0.18}px) scale(${1 + scrollY * 0.0003})`,
+          willChange: "transform",
+          transition: "box-shadow 0.2s ease",
+        }}>
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", background: "#111" }}>
+            <img src={logoImg} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </div>
         </div>
 
-        {/* About card */}
-        <div className="w-full max-w-sm mb-10 relative rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl overflow-hidden">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
-          <div className="px-6 py-5">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-7 h-7 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-400">
-                <CompassIcon />
-              </div>
-              <h2 className="text-sm font-semibold text-white/90 tracking-wide">Quem somos</h2>
-            </div>
-            <p className="text-sm text-white/45 leading-relaxed">
-              Somos <span className="text-white/75 font-medium">dois casais de amigos</span> unidos pela mesma paixão: estradas, motos e a liberdade de explorar o mundo juntos.
-            </p>
-            <p className="text-sm text-white/45 leading-relaxed mt-2.5">
-              Cada viagem é uma nova aventura — e queremos <span className="text-white/75 font-medium">compartilhar cada momento</span> dessa jornada com você.
-            </p>
-          </div>
+        {/* Name */}
+        <h1 style={{
+          fontFamily: "'Playfair Display', serif",
+          fontSize: "1.7rem",
+          fontWeight: 900,
+          margin: "0 0 6px",
+          textAlign: "center",
+          textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+        }}>
+          {t("heroTitle1")} {t("heroTitle2")}
+        </h1>
+
+        {/* Badge */}
+        <p style={{
+          fontSize: "0.8rem",
+          color: "rgba(255,255,255,0.65)",
+          marginBottom: 12,
+          letterSpacing: "0.04em",
+          textAlign: "center",
+        }}>
+          {t("badge")}
+        </p>
+
+        {/* Bio */}
+        <p style={{
+          fontSize: "0.88rem",
+          color: "rgba(255,255,255,0.75)",
+          lineHeight: 1.65,
+          textAlign: "center",
+          marginBottom: 32,
+          maxWidth: 320,
+          textShadow: "0 1px 8px rgba(0,0,0,0.5)",
+        }}>
+          {t("heroDescription")}
+        </p>
+
+        {/* Link buttons */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "100%" }}>
+          <PillButton
+            href="https://youtube.com/@viagensememorias4a?si=Ul9klEuf5DxcnuVR"
+            icon={<YouTubeIcon />}
+            label={t("youtubeName")}
+          />
+          <PillButton
+            href="https://www.instagram.com/viagensememorias_oficial?igsh=MTVjejNodXg4d2t0dQ=="
+            icon={<InstagramIcon />}
+            label={t("instagramName")}
+          />
         </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 w-full max-w-sm mb-5">
-          <div className="flex-1 h-px bg-white/[0.07]" />
-          <span className="text-[0.65rem] uppercase tracking-[0.18em] text-white/25 whitespace-nowrap">
-            Nossos canais
-          </span>
-          <div className="flex-1 h-px bg-white/[0.07]" />
-        </div>
-
-        {/* Links */}
-        <div className="w-full max-w-sm flex flex-col gap-3 mb-16">
-          {links.map(({ href, label, sub, Icon, hoverBorder, hoverGlow, iconColor }) => (
-            <a
-              key={href}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group flex items-center gap-4 bg-white/[0.03] border border-white/[0.07] rounded-2xl px-4 py-3.5 text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/[0.05] ${hoverBorder} ${hoverGlow}`}
-            >
-              <div className={`w-11 h-11 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] flex-shrink-0 transition-colors duration-200 ${iconColor}`}>
-                <Icon />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold leading-tight">{label}</p>
-                <p className="text-xs text-white/35 mt-0.5">{sub}</p>
-              </div>
-              <div className="text-white/20 group-hover:text-white/55 group-hover:translate-x-1 transition-all duration-200">
-                <ArrowRightIcon />
-              </div>
-            </a>
-          ))}
-        </div>
+        <ShareButton label={t("shareLabel")} copiedLabel={t("shareCopied")} />
 
         {/* Footer */}
-        <footer className="text-center border-t border-white/[0.06] pt-7 w-full max-w-sm">
-          <p className="font-serif italic text-white/25 text-sm mb-1">Viagens e Memórias</p>
-          <p className="text-[0.62rem] uppercase tracking-widest text-white/15">
-            © 2026 · Rafa & Deah · Todos os direitos reservados
-          </p>
-        </footer>
-      </section>
+        <p style={{
+          marginTop: 40,
+          fontSize: "0.62rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.12em",
+          color: "rgba(255,255,255,0.3)",
+          textAlign: "center",
+        }}>
+          {t("footerCopy")}
+        </p>
+      </div>
     </main>
   );
 }
